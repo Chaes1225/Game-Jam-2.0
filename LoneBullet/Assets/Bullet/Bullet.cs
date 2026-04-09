@@ -34,11 +34,12 @@ public class Bullet : MonoBehaviour
         Rigidbody.linearVelocity = Vector2.zero;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (gameObject.CompareTag("Enemy"))
         {
             Destroy(other.gameObject);
         }
     }
+
 }
