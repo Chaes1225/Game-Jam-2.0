@@ -4,25 +4,41 @@ public class Bullet : MonoBehaviour
 {
     [Header("Bullet Settings")]
     [SerializeField] private float speed = 15f;
-    [SerializeField] private float lifetime = 3f;
-
     [SerializeField] private Rigidbody2D rb;
 
-    void Start()
+    public Rigidbody2D Rigidbody
     {
-        // transform.up moves the bullet in the direction it is currently facing
-        rb.linearVelocity = transform.up * speed;
+        get
+        {
+            if (rb == null)
+            {
+                rb = GetComponent<Rigidbody2D>();
+            }
 
-        // Destroy the bullet after 'lifetime' seconds to save memory
-        Destroy(gameObject, lifetime);
+            return rb;
+        }
     }
 
-    // This triggers when the bullet hits something with a Collider2D
-    private void OnTriggerEnter2D(Collider2D hitInfo)
+    public void Launch(Vector2 direction)
     {
-        // Example: if (hitInfo.CompareTag("Enemy")) { // Damage Enemy }
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            return;
+        }
 
-        // Destroy the bullet when it hits anything
-        Destroy(gameObject);
+        Rigidbody.linearVelocity = direction.normalized * speed;
+    }
+
+    public void Stop()
+    {
+        Rigidbody.linearVelocity = Vector2.zero;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (gameObject.CompareTag("Enemy"))
+        {
+            Destroy(other.gameObject);
+        }
     }
 }

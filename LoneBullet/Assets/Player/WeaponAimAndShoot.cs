@@ -12,6 +12,7 @@ public class WeaponAimAndShoot : MonoBehaviour
 
     private Camera mainCam;
     private Vector2 mousePosition;
+    private ScreenBounceBullet activeBullet;
 
     void Start()
     {
@@ -25,7 +26,7 @@ public class WeaponAimAndShoot : MonoBehaviour
         mousePosition = mainCam.ScreenToWorldPoint(Input.mousePosition);
 
         // 2. Listen for the left mouse click
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && activeBullet == null)
         {
             Shoot();
         }
@@ -62,12 +63,32 @@ public class WeaponAimAndShoot : MonoBehaviour
     {
         // 3. Calculate the exact direction from the player to the mouse
         Vector2 lookDirection = mousePosition - (Vector2)firePoint.position;
+        if (lookDirection.sqrMagnitude <= 0.0001f)
+        {
+            return;
+        }
 
         // 4. Calculate the angle in degrees. 
         // We subtract 90f because Unity 2D sprites usually face "Up" on the Y axis by default.
         float angle = Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg - 90f;
 
         // 5. Spawn the bullet!
-        Instantiate(bulletPrefab, firePoint.position, Quaternion.Euler(0, 0, angle));
+        GameObject spawnedBullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.Euler(0, 0, angle));
+        activeBullet = spawnedBullet.GetComponent<ScreenBounceBullet>();
+
+        if (activeBullet == null)
+        {
+            activeBullet = spawnedBullet.AddComponent<ScreenBounceBullet>();
+        }
+
+        activeBullet.Fire(transform.root, lookDirection, HandleBulletPickedUp);
+    }
+
+    private void HandleBulletPickedUp(ScreenBounceBullet pickedUpBullet)
+    {
+        if (activeBullet == pickedUpBullet)
+        {
+            activeBullet = null;
+        }
     }
 }
