@@ -10,6 +10,9 @@ public class WeaponAimAndShoot : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip shootSound;
+
     private Camera mainCam;
     private Vector2 mousePosition;
     private ScreenBounceBullet activeBullet;
@@ -82,6 +85,12 @@ public class WeaponAimAndShoot : MonoBehaviour
         }
 
         activeBullet.Fire(transform.root, lookDirection, HandleBulletPickedUp);
+
+        // --- NEW: Play the sound right after the bullet fires! ---
+        if (shootSound != null)
+        {
+            AudioManager.Instance.PlaySFXRandomPitch(shootSound);
+        }   
     }
 
     private void HandleBulletPickedUp(ScreenBounceBullet pickedUpBullet)

@@ -36,8 +36,18 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (gameObject.CompareTag("Enemy"))
+
+        if (other.gameObject.CompareTag("Enemy"))
         {
+            // Find the GameManager in the scene
+            GameManager gm = FindFirstObjectByType<GameManager>();
+
+            // If we found it, add 10 points! (You can change this number)
+            if (gm != null)
+            {
+                gm.AddScore(10);
+            }
+
             Destroy(other.gameObject);
         }
     }
